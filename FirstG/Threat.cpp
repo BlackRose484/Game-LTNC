@@ -76,9 +76,9 @@ void Threat::show(SDL_Renderer* render)
 			O_Rect.y = y_pos - T_map_y;
 
 			frame++;
-			frame = (frame >= n_frame * 8) ? 0 : frame;
+			frame = (frame >= n_frame * 16) ? 0 : frame;
 			SDL_Rect renderQ{ O_Rect.x,O_Rect.y,T_w,T_h };
-			SDL_RenderCopyEx(render, OBJ, &T_clip[frame / 8], &renderQ, 0.0, NULL, T_flip);
+			SDL_RenderCopyEx(render, OBJ, &T_clip[frame / 16], &renderQ, 0.0, NULL, T_flip);
 		}
 		else
 		{
@@ -86,9 +86,9 @@ void Threat::show(SDL_Renderer* render)
 			O_Rect.y = y_pos - T_map_y;
 
 			frame_attack++;
-			frame_attack = (frame_attack >= (n_frame + n_frame_attack) * 8) ? n_frame*8 : frame_attack;
+			frame_attack = (frame_attack >= (n_frame + n_frame_attack) * 16) ? n_frame*16 : frame_attack;
 			SDL_Rect renderQ{ O_Rect.x,O_Rect.y,T_w,T_h };
-			SDL_RenderCopyEx(render, OBJ, &T_clip[frame_attack / 8], &renderQ, 0.0, NULL, T_flip);
+			SDL_RenderCopyEx(render, OBJ, &T_clip[frame_attack / 16], &renderQ, 0.0, NULL, T_flip);
 		}
 	}
 }
@@ -106,6 +106,14 @@ void Threat::Do_Threat(Map& map_data,SDL_Renderer*render)
 		else if (T_input_move.right == 1)
 		{
 			x_val += T_SPEED;
+		}
+		if (T_input_move.up == 1)
+		{
+			y_val -= T_SPEED;
+		}
+		else if (T_input_move.down == 1)
+		{
+			y_val += T_SPEED;
 		}
 		CheckMap(map_data);
 	}
@@ -191,15 +199,26 @@ void Threat::CheckMap(Map& data_map)
 			}
 		}
 	}
-	if (x_val < 0 && x_pos < Lim_Area_Left)
+	if (x_val < 0 && x_pos < Lim_Area_Left+10)
 	{
 		x_val = 0;
 		//T_flip = SDL_FLIP_HORIZONTAL;
 	
 	}
-	else if (x_val > 0 && x_pos > Lim_Area_Right)
+	else if (x_val > 0 && x_pos > Lim_Area_Right-10)
 	{
 		x_val = 0;		
+		//T_flip = SDL_FLIP_NONE;
+	}
+	if (y_val < 0 && y_pos < Lim_Area_Up-10)
+	{
+		y_val = 0;
+		//T_flip = SDL_FLIP_HORIZONTAL;
+
+	}
+	else if (y_val > 0 && y_pos > Lim_Area_Down+10)
+	{
+		y_val = 0;
 		//T_flip = SDL_FLIP_NONE;
 	}
 	x_pos += x_val;
@@ -286,11 +305,11 @@ void Threat::T_move(SDL_Renderer* render, const int& x, const int& y)
 			}
 			else
 			{
-				if (x_pos>Lim_Area_Left&&x_pos>x)
+				if (x_pos>Lim_Area_Left+10&&x_pos>x+10)
 				{
 					T_flip = SDL_FLIP_HORIZONTAL;
 				}
-				else if (x_pos<Lim_Area_Right && x_pos<x)
+				else if (x_pos<Lim_Area_Right-10 && x_pos<x-10)
 				{
 					T_flip = SDL_FLIP_NONE;
 				}
@@ -318,17 +337,17 @@ bool Threat::Die_Threat(std::string path, SDL_Renderer* render)
 	return ret;
 }
 
-void Threat::Act_Threat(const int &x, const int &y, Map& map_data, SDL_Renderer* render)
+void Threat::Act_Threat(const int &x, const int &y,Map& map_data, SDL_Renderer* render)
 {
 	if(is_move)
 	{
-		if (x_pos > x && x_pos > Lim_Area_Left)
+		if (x_pos > x && x_pos > Lim_Area_Left+10)
 		{
 			T_input_move.left = 1;
 			T_input_move.right = 0;
 			Do_Threat(map_data, render);
 		}
-		else if (x_pos < x && x_pos < Lim_Area_Right)
+		else if (x_pos < x && x_pos < Lim_Area_Right-10)
 		{
 			T_input_move.left = 0;
 			T_input_move.right = 1;
@@ -338,6 +357,24 @@ void Threat::Act_Threat(const int &x, const int &y, Map& map_data, SDL_Renderer*
 		{
 			T_input_move.left = 0;
 			T_input_move.right = 0;
+		}
+
+		if (y_pos < y && y_pos < Lim_Area_Down-10)
+		{
+			T_input_move.up = 0;
+			T_input_move.down = 1;
+			Do_Threat(map_data, render);
+		}
+		else if (y_pos > y && y_pos > Lim_Area_Up+10)
+		{
+			T_input_move.up = 1;
+			T_input_move.down = 0;
+			Do_Threat(map_data, render);
+		}
+		else
+		{
+			T_input_move.up = 0;
+			T_input_move.down = 0;
 		}
 	}
 }

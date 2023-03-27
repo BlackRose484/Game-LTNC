@@ -492,7 +492,7 @@ int main(int arc, char* argv[])
 						Golem->Set_Map_T(k.start_x, k.start_y);
 						Golem->Do_Threat(k, gRender);
 						Golem->T_move(gRender,ex.get_x_pos(),ex.get_y_pos());
-						//Golem->T_Make_Bullet(gRender);
+						Golem->T_Make_Bullet(gRender);
 						Golem->show(gRender);
 					}
 					else
@@ -552,7 +552,7 @@ int main(int arc, char* argv[])
 					Player_Rect_Check.x = ex.get_x_pos();
 					Player_Rect_Check.y = ex.get_y_pos();
 
-					SDL_Rect Area_T{ threat_->get_T_x_pos() - 500,threat_->get_T_y_pos()-25,1000 + threat_->get_T_w(),threat_->get_T_h()+25};
+					SDL_Rect Area_T{ threat_->get_T_x_pos() - 500,threat_->get_T_y_pos()-200,1000 + threat_->get_T_w(),threat_->get_T_h()+400};
 					bool col2 = Common::CheckCollision(Player_Rect_Check, Area_T);
 					if (col2)
 					{

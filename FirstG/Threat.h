@@ -40,6 +40,9 @@ protected:
 
 	int Lim_Area_Left;
 	int Lim_Area_Right;
+	int Lim_Area_Up;
+	int Lim_Area_Down;
+
 	input T_input_move;
 
 	bool is_attack;
@@ -75,7 +78,7 @@ public:
 
 	void Set_T_cb_time(const int& x) { T_cb_time = x; };
 
-	void set_Area(const int& x, const int& y) { Lim_Area_Left = x; Lim_Area_Right = y; };
+	void set_Area(const int& x, const int& y, const int& z, const int& t) { Lim_Area_Left = x; Lim_Area_Right = y; Lim_Area_Up = z; Lim_Area_Down = t; };
 
 	void set_Attack(const bool& x) { is_attack = x; };
 

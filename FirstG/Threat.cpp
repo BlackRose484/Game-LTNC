@@ -131,7 +131,7 @@ void Threat::CheckMap(Map& data_map)
 	int hMin = (T_h > TILE_SIZE) ? TILE_SIZE : T_h;
 
 	x1 = (x_pos + x_val) / TILE_SIZE;
-	x2 = (x_pos + T_w + x_val - 1) / TILE_SIZE;
+	x2 = (x_pos + T_w + x_val - 2) / TILE_SIZE;
 
 	y1 = (y_pos) / TILE_SIZE;
 	y2 = (y_pos + hMin - 1) / TILE_SIZE;
@@ -145,10 +145,13 @@ void Threat::CheckMap(Map& data_map)
 			if ((val1 != 2 && val1 != 5) || (val2 != 2 && val2 != 5))
 			{
 				x_pos = x2 * TILE_SIZE;
-				x_pos -= T_w + 1;
+				x_pos -= T_w + 2;
 				x_val = 0;
-				T_input_move.left = 1;
-				T_input_move.right = 0;
+				if(!is_attack)
+				{
+					T_input_move.left = 1;
+					T_input_move.right = 0;
+				}
 				T_flip = SDL_FLIP_HORIZONTAL;
 
 			}
@@ -159,10 +162,13 @@ void Threat::CheckMap(Map& data_map)
 			int val2 = data_map.tile[y2][x1];
 			if ((val1 != 2 && val1 != 5) || (val2 != 2 && val2 != 5))
 			{
-				x_pos = (x1 + 1) * TILE_SIZE;
+				x_pos = (x1+1 ) * TILE_SIZE-x_val;
 				x_val = 0;
-				T_input_move.left = 0;
-				T_input_move.right = 1;
+				if(!is_attack)
+				{
+					T_input_move.left = 0;
+					T_input_move.right = 1;
+				}
 				T_flip = SDL_FLIP_NONE;
 			}
 		}
@@ -341,16 +347,20 @@ void Threat::Act_Threat(const int &x, const int &y,Map& map_data, SDL_Renderer* 
 {
 	if(is_move)
 	{
-		if (x_pos > x && x_pos > Lim_Area_Left+10)
+		if (x_pos > x+4 && x_pos > Lim_Area_Left+10)
 		{
 			T_input_move.left = 1;
 			T_input_move.right = 0;
+			std::cout <<"x = " <<x << " x_pos = " << x_pos << std::endl;
+			std::cout << std::endl;
 			Do_Threat(map_data, render);
 		}
-		else if (x_pos < x && x_pos < Lim_Area_Right-10)
+		else if (x_pos < x-4 && x_pos < Lim_Area_Right-10)
 		{
 			T_input_move.left = 0;
 			T_input_move.right = 1;
+			std::cout << "x = " << x << " x_pos = " << x_pos << std::endl;
+			std::cout << std::endl;
 			Do_Threat(map_data, render);
 		}
 		else
@@ -359,16 +369,20 @@ void Threat::Act_Threat(const int &x, const int &y,Map& map_data, SDL_Renderer* 
 			T_input_move.right = 0;
 		}
 
-		if (y_pos < y && y_pos < Lim_Area_Down-10)
+		if (y_pos < y-4 && y_pos < Lim_Area_Down-10)
 		{
 			T_input_move.up = 0;
 			T_input_move.down = 1;
+			std::cout << "y = " << y << " y_pos = " << y_pos << std::endl;
+			std::cout << std::endl;
 			Do_Threat(map_data, render);
 		}
-		else if (y_pos > y && y_pos > Lim_Area_Up+10)
+		else if (y_pos > y+4 && y_pos > Lim_Area_Up+10)
 		{
 			T_input_move.up = 1;
 			T_input_move.down = 0;
+			std::cout << "y = " << y << " y_pos = " << y_pos << std::endl;
+			std::cout << std::endl;
 			Do_Threat(map_data, render);
 		}
 		else

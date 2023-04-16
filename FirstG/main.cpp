@@ -214,6 +214,7 @@ int main(int arc, char* argv[])
 		Button Select_Map_Button;
 		Button Map[2];
 		Button Quit;
+		Button Quit_Menu;
 		Button Update_Player_HP;
 		Button Update_Player_Dame;
 
@@ -262,7 +263,7 @@ int main(int arc, char* argv[])
 					Help_Button.HandleHowToPlayButton(e, gRender, menu, play, quitMenu, howToPlay, gChunk);
 					Select_Map_Button.SelectMapButton(e, gRender, menu, play, quitMenu, select_map, gChunk);
 					Update_Button.HandleUpgradeButton(e, gRender, menu, play, howToPlay, upgrade, gChunk);
-					Quit.HandleQuit(e, gRender, menu, play, q, gChunk);
+					Quit_Menu.HandleQuitMenu(e, gRender, menu, play, q, gChunk);
 				}
 
 				SDL_SetRenderDrawColor(gRender, 100, 100, 0, 100);
@@ -284,8 +285,8 @@ int main(int arc, char* argv[])
 				Update_Button.setRect(100, 400);
 				Update_Button.Render(gRender);
 
-				Quit.setRect(100, 500);
-				Quit.Render(gRender);
+				Quit_Menu.setRect(100, 500);
+				Quit_Menu.Render(gRender);
 				
 
 				SDL_RenderPresent(gRender);

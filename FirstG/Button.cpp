@@ -308,6 +308,24 @@ void Button::HandleQuit(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& pl
 		LoadImage("img//Menu//Button//quit.png", render,1,2,3);
 }
 
+void Button::HandleQuitMenu(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quit, Mix_Chunk* sound_effect)
+{
+	if (isInside(e))
+	{
+
+		LoadImage("img//Menu//Button//quit_select_menu.png", render, 1, 2, 3);
+		if (e.type == SDL_MOUSEBUTTONDOWN)
+		{
+			Mix_PlayChannel(-1, sound_effect, 0);
+			menu = false;
+			play = false;
+			quit = true;
+		}
+	}
+	else
+		LoadImage("img//Menu//Button//quit_menu.png", render, 1, 2, 3);
+}
+
 void Button:: HandleUpgradeButton(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& HowToPlay, bool& upgrade, Mix_Chunk* sound_effect)
 {
 	if (isInside(e))

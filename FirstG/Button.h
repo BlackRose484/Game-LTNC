@@ -48,4 +48,5 @@ public:
 
 	void HandleQuit(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quit, Mix_Chunk* sound_effect);
 
+	void HandleQuitMenu(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quit, Mix_Chunk* sound_effect);
 };

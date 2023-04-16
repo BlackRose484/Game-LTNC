@@ -46,7 +46,7 @@ void MapGame::LoadTile(SDL_Renderer* render)
 	FILE* fp = NULL;
 	for (int i = 0; i < MAX_TILE; i++)
 	{
-		sprintf_s(file_img, "map//%d.png", i);
+		sprintf_s(file_img, "map//images//img (%d).png", i);
 
 		fopen_s(&fp, file_img, "rb");
 

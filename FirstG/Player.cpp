@@ -307,7 +307,7 @@ void Player:: CheckMap(Map& data_map, SDL_Renderer* render, Time& _time, bool& w
 			int val2 = data_map.tile[y2][x2];
 			if ((val1 != 2 && val1 != 5) || (val2 != 2 && val2 != 5))
 			{
-				if ((val1==170) || (val2==170))
+				if ((val1==166) || (val2==166))
 				{
 					Increase_Score();
 					Increase_Score();
@@ -315,7 +315,7 @@ void Player:: CheckMap(Map& data_map, SDL_Renderer* render, Time& _time, bool& w
 					data_map.tile[y1][x2] = 2;
 					data_map.tile[y2][x2] = 2;
 				}
-				else if ((val1 == 166) || (val2 == 166))
+				else if ((val1 == 167) || (val2 == 167))
 				{
 					/*SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,
 						"Congratulate",
@@ -349,7 +349,7 @@ void Player:: CheckMap(Map& data_map, SDL_Renderer* render, Time& _time, bool& w
 			int val2 = data_map.tile[y2][x1];
 			if ((val1 != 2 && val1 != 5) || (val2 != 2 && val2 != 5))
 			{
-				if ((val1 == 170) || (val2 == 170))
+				if ((val1 == 166) || (val2 == 166))
 				{
 					Increase_Score();
 					Increase_Score();
@@ -357,7 +357,7 @@ void Player:: CheckMap(Map& data_map, SDL_Renderer* render, Time& _time, bool& w
 					data_map.tile[y1][x1] = 2;
 					data_map.tile[y2][x1] = 2;
 				}
-				else if ((val1 == 166) || (val2 == 166))
+				else if ((val1 == 167) || (val2 == 167))
 				{
 					win = 1;
 					play = 0;
@@ -390,7 +390,7 @@ void Player:: CheckMap(Map& data_map, SDL_Renderer* render, Time& _time, bool& w
 			int val2 = data_map.tile[y2][x2];
 			if ((val1 != 2 && val1 != 5) || (val2 != 2 && val2 != 5))
 			{
-				if ((val1 == 170) || (val2 == 170))
+				if ((val1 == 166) || (val2 == 166))
 				{
 					Increase_Score();
 					Increase_Score();
@@ -398,7 +398,7 @@ void Player:: CheckMap(Map& data_map, SDL_Renderer* render, Time& _time, bool& w
 					data_map.tile[y1][x2] = 2;
 					data_map.tile[y2][x2] = 2;
 				}
-				else if ((val1 == 166) || (val2 == 166))
+				else if ((val1 == 167) || (val2 == 167))
 				{
 					win = 1;
 					play = 0;
@@ -421,7 +421,7 @@ void Player:: CheckMap(Map& data_map, SDL_Renderer* render, Time& _time, bool& w
 			int val2 = data_map.tile[y1][x2];
 			if ((val1 != 2 && val1 != 5) || (val2 != 2 && val2 != 5))
 			{
-				if ((val1 == 170) || (val2 == 170))
+				if ((val1 == 166) || (val2 == 166))
 				{
 					Increase_Score();
 					Increase_Score();
@@ -429,7 +429,7 @@ void Player:: CheckMap(Map& data_map, SDL_Renderer* render, Time& _time, bool& w
 					data_map.tile[y1][x1] = 2;
 					data_map.tile[y1][x2] = 2;
 				}
-				else if ((val1==166) || (val2==166))
+				else if ((val1 == 167) || (val2 == 167))
 				{
 					win = 1;
 					play = 0;

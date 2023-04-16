@@ -80,7 +80,39 @@ std::vector<Threat*> Create_Threat(SDL_Renderer* gRender)
 			T_new->Set_N_frame(5);
 			T_new->Set_N_frame_attack(11);
 			T_new->LoadImage("img//Threat//T_wolf.png", gRender);
-			T_new->Set_T_pos(i * 300 + 500, i * 500 + 300);
+			T_new->Set_T_pos(i * 400 + 500, i * 500 + 300);
+			T_new->Set_CLip_T();
+			T_new->Set_Hp_Threat(200);
+
+
+			T_new->Set_T_dir_move(1);
+			T_new->Set_T_move(1);
+			int left = T_new->get_T_x_pos() - 200;
+			int right = T_new->get_T_x_pos() + 200;
+			int up = T_new->get_T_y_pos() - 200;
+			int down = T_new->get_T_y_pos() + 200;
+			T_new->set_Area(left - 100, right + 100, up - 100, down + 100);
+			T_new->Set_T_Dis_move(left, right);
+
+
+			Bullet* T_bullet = new Bullet;
+			T_bullet->LoadImage("img//Threat//shot.png", gRender);
+			T_new->T_Load_Bullet(T_bullet, gRender);
+
+			list_Threat.push_back(T_new);
+		}
+	}
+
+	Threat* T_Pig = new Threat[10];
+	for (int i = 0; i < 10; i++)
+	{
+		Threat* T_new = T_Pig + i;
+		if (T_new != NULL)
+		{
+			T_new->Set_N_frame(6);
+			T_new->Set_N_frame_attack(11);
+			T_new->LoadImage("img//Threat//T_pig.png", gRender);
+			T_new->Set_T_pos(i * 200 + 2000, i * 500 + 3000);
 			T_new->Set_CLip_T();
 			T_new->Set_Hp_Threat(200);
 
@@ -176,7 +208,7 @@ std::vector<Threat*> Create_Threat(SDL_Renderer* gRender)
 			T_new->Set_N_frame(8);
 			T_new->Set_N_frame_attack(8);
 			T_new->LoadImage("img//Threat//T_Dragon.png", gRender);
-			T_new->Set_T_pos(i * 750 + 900, i * 400 + 1900);
+			T_new->Set_T_pos(i * 750 + 4000, i * 300 + 1900);
 			T_new->Set_CLip_T();
 			T_new->Set_Hp_Threat(400);
 
@@ -207,7 +239,7 @@ std::vector<Threat*> Create_Threat(SDL_Renderer* gRender)
 				T_new->Set_N_frame(8);
 				T_new->Set_N_frame_attack(9);
 				T_new->LoadImage("img//Threat//T_Winged.png", gRender);
-				T_new->Set_T_pos(i * 650 + 900, i * 200 + 1900);
+				T_new->Set_T_pos(i * 400 + 1000, i * 700 + 5000);
 				T_new->Set_CLip_T();
 				T_new->Set_Hp_Threat(400);
 

@@ -25,5 +25,3 @@ int get_from_file(const char* path);
 void update(const char* path, int& new_value);
 
 std::vector<Threat*> Create_Threat(SDL_Renderer* gRender);
-
-std::vector<Boss*> Create_Boss(SDL_Renderer* gRender);

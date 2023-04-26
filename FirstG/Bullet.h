@@ -19,6 +19,8 @@ private:
 	int map_x;
 	int map_y;
 
+	
+
 public:
 	Bullet();
 	~Bullet();
@@ -51,6 +53,8 @@ public:
 
 	void RenderBullet(SDL_Renderer* render);
 
-	
+	void SetVel(double angle,int PoNx,int PoNy);
+
+	void ShotForPet(const int& x_left, const int& x_right, const int& y_top, const int& y_bot, SDL_Renderer* render);
 
 };

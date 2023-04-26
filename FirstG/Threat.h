@@ -84,7 +84,7 @@ public:
 
 	void Set_N_frame(const int& x) { n_frame = x; };
 
-	void Set_N_frame_attack(const int& x) { n_frame_attack = x; frame_attack = n_frame_attack; };
+	void Set_N_frame_attack(const int& x) { n_frame_attack = x; frame_attack = n_frame*16; };
 
 	int get_T_w()const { return T_w; };
 

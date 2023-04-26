@@ -51,7 +51,8 @@ std::vector<Threat*> Create_Threat(SDL_Renderer* gRender)
 		Threat* T_new = T_Static + i;
 		if (T_new != NULL)
 		{
-			T_new->Set_N_frame(8);
+			T_new->Set_N_frame(4);
+			T_new->Set_N_frame_attack(4);
 			T_new->LoadImage("img//Threat//threat.png", gRender);
 			T_new->Set_T_pos(i * 400 + 1000, i * 400 + 100);
 			T_new->Set_CLip_T();
@@ -142,7 +143,8 @@ std::vector<Threat*> Create_Threat(SDL_Renderer* gRender)
 		if (T_new != NULL)
 		{
 			T_new->Set_N_frame(8);
-			T_new->LoadImage("img//Threat//snail_threat.png", gRender);
+			T_new->Set_N_frame_attack(8);
+			T_new->LoadImage("img//Threat//T_snail.png", gRender);
 			T_new->Set_T_pos(i * 700 + 1500, i * 600 + 1630);
 			T_new->Set_CLip_T();
 			T_new->Set_Hp_Threat(50);
@@ -172,9 +174,9 @@ std::vector<Threat*> Create_Threat(SDL_Renderer* gRender)
 		Threat* T_new = T_Bee + i;
 		if (T_new != NULL)
 		{
-
 			T_new->Set_N_frame(8);
-			T_new->LoadImage("img//Threat//bee_threat.png", gRender);
+			T_new->Set_N_frame_attack(8);
+			T_new->LoadImage("img//Threat//T_bee.png", gRender);
 			T_new->Set_T_pos(i * 1000 + 1500, i * 200 + 1800);
 			T_new->Set_CLip_T();
 			T_new->Set_Hp_Threat(100);

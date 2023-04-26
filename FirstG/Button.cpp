@@ -367,3 +367,42 @@ void Button::HandleUpgrade(SDL_Event& e, SDL_Renderer* render, int& money_needed
 		LoadImage("img//Menu//Button//upgrade_button.png", render);
 	}
 }
+
+void Button::Mute(SDL_Event& e, SDL_Renderer* render, int& volume, int& temp_volume, Mix_Chunk* sound_effect)
+{
+	if (volume)
+	{
+		if (isInside(e))
+		{
+			LoadImage("img//Menu//Button//music_select.png", render);
+			if (e.type == SDL_MOUSEBUTTONDOWN)
+			{
+				Mix_PlayChannel(-1, sound_effect, 0);
+				temp_volume = volume;
+				volume = 0;
+				Mix_VolumeMusic(volume);
+			}
+		}
+		else
+		{
+			LoadImage("img//Menu//Button//music.png", render);
+		}
+	}
+	else
+	{
+		if (isInside(e))
+		{
+			LoadImage("img/Menu/Button/music_mute_select.png", render, 1, 3, 5);
+			if (e.type == SDL_MOUSEBUTTONDOWN)
+			{
+				Mix_PlayChannel(-1, sound_effect, 0);
+				volume = temp_volume;
+				Mix_VolumeMusic(volume);
+			}
+		}
+		else
+		{
+			LoadImage("img/Menu/Button/music_mute.png", render, 1, 3, 5);
+		}
+	}
+}

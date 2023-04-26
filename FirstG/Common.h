@@ -42,7 +42,7 @@ const Uint8 A = 255;
 
 #define LIM_DIS_BULLET_T 200
 #define T_BULLET_SPEED 4
-#define T_SPEED 2
+#define T_SPEED 1
 
 
 

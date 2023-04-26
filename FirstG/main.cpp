@@ -12,6 +12,7 @@
 #include"Boss_AI.h"
 #include"Button.h"
 #include"Game_Utis.h"
+#include"Pet.h"
 
 int hp_player;
 int dame_player;
@@ -19,6 +20,8 @@ int money;
 
 int plus_hp = 1;
 int plus_dame = 5;
+int volume = 10;
+int temp_volume = 0;
 
 int cost_plus_hp = 100;
 int cost_plus_dame = 100;
@@ -121,7 +124,8 @@ int main(int arc, char* argv[])
 		gMusic = Mix_LoadMUS("sound//action.mid");
 		gChunk = Mix_LoadWAV("asset//sound_effect//switch.wav");
 		gChunk1 = Mix_LoadWAV("asset//sound_effect//upgrade_sound_effect.wav");
-		Mix_PlayMusic(gMusic, -1);		
+		Mix_PlayMusic(gMusic, -1);
+		Mix_VolumeMusic(volume);
 		SDL_Color gColor = { 0,0,0,255 };
 
 
@@ -138,6 +142,15 @@ int main(int arc, char* argv[])
 		ex.LoadImage("img//Player//right1.png", gRender);
 		ex.SetClip();
 		ex.setPos(200, 300);
+
+		//Pet
+		Pet pet;
+		pet.Set_N_frame(5);
+		pet.Set_N_frame_attack(11);
+		pet.LoadImage("img//Threat//T_wolf.png", gRender);
+		pet.SetAttack(0);
+		pet.SetClip();
+		pet.SetPos(100, 200);
 
 		//Threat
 		std::vector<Threat*> list_Threat = Create_Threat(gRender);
@@ -189,18 +202,21 @@ int main(int arc, char* argv[])
 		Frame_Menu.LoadImage("img//Menu//Button//frame_menu.png", gRender);
 		Frame_Menu.setRect(WIDTH/2-Frame_Menu.getRect().w/2, HEIGHT/2-Frame_Menu.getRect().h/2);
 
-		//Menu game
-		bool play = 0;
+		bool hello_game = 1;
+		bool play = false;
+		bool play1 = false;
 		bool menu = true;
 		bool quitMenu = false;
 		bool exitGame = false;
 		bool howToPlay = false;
 		bool upgrade = false;
 		bool option = false;
-		bool play_again = 0;
-		bool select_map = 0;
-		bool win = 0;
-		bool lose = 0;
+		bool play_again = false;
+		bool select_map = false;
+		bool setting = false;
+		bool win = false;
+		bool lose = false;
+		bool mute = false;
 
 		//Some Button For Game
 		Button Play_Button;
@@ -217,6 +233,7 @@ int main(int arc, char* argv[])
 		Button Quit_Menu;
 		Button Update_Player_HP;
 		Button Update_Player_Dame;
+		Button Mute_;
 
 		//Text
 		Text Cur_Hp;
@@ -236,6 +253,14 @@ int main(int arc, char* argv[])
 
 		int idx_help = 0;
 
+		Base Loading[4];
+		Loading[0].LoadImage("img//Menu//loading0.png", gRender, 1, 3, 5);
+		Loading[1].LoadImage("img//Menu//loading1.png", gRender, 1, 3, 5);
+		Loading[2].LoadImage("img//Menu//loading2.png", gRender, 1, 3, 5);
+		Loading[3].LoadImage("img//Menu//loading3.png", gRender, 1, 3, 5);
+
+		Base HelloGame;
+		HelloGame.LoadImage("img//Menu//hello_game.png", gRender, 1, 3, 5);
 
 		Base Menu_bg;
 		Menu_bg.LoadImage("img//Menu//menu.jpg", gRender, 1, 3, 5);
@@ -248,9 +273,28 @@ int main(int arc, char* argv[])
 		Base Money;
 		Money.LoadImage("img//SP_item//money.png", gRender);
 
+		int detect_x = INT_MAX;
+		int detect_y = INT_MAX;
+		int kc = 1e9;
+		int PoNx = 1;
+		int PoNy = 1;
+
 		//Game Loop
 		while (!q)
 		{    
+			if (hello_game)
+			{
+				int t = 0;
+				while (t <= 250)
+				{
+					HelloGame.Render(gRender);
+					cerr << t << endl;
+					SDL_RenderPresent(gRender);
+					t++;
+				}
+				hello_game = false;
+			}
+
 			if (menu)
 			{
 				while (SDL_PollEvent(&e) != 0)
@@ -425,7 +469,6 @@ int main(int arc, char* argv[])
 				SDL_RenderPresent(gRender);
 			}
 
-
 			int s = 0;
 			if(play)
 			{
@@ -433,6 +476,18 @@ int main(int arc, char* argv[])
 				
 			}
 
+			if (play || play_again)
+			{
+				int t = 0;
+				while (t <= 250)
+				{
+					Loading[(t / 16) % 4].setRect(0, 0);
+					Loading[(t / 16) % 4].Render(gRender);
+					cerr << t << endl;
+					SDL_RenderPresent(gRender);
+					t++;
+				}
+			}
 			while(play)
 			{	
 				while (SDL_PollEvent(&e) != 0)
@@ -443,13 +498,8 @@ int main(int arc, char* argv[])
 						play = 0;
 					}
 					ex.HandleKey(e, gRender, time_game);
-					if (option)
-					{
-						Play_Again_Button.HandleReplayButton(e, gRender, menu, play, howToPlay, s, hp, option,play_again, list_Threat,win, gChunk);
-						Menu_Button.HandleMenuButton(e, gRender, menu, play, quitMenu, hp, option, play_again, list_Threat, gChunk);
-						Quit.HandleQuit(e, gRender, menu, play, q, gChunk);
-					}
 					Option_Button.HandleOptionButton(e, gRender, option, gChunk);
+					Mute_.Mute(e, gRender, volume, temp_volume, gChunk);
 				}
 
 				//clear
@@ -477,9 +527,57 @@ int main(int arc, char* argv[])
 
 				//Display Player
 				ex.Show(gRender);
+				pet.PetMove(ex.get_x_pos(), ex.get_y_pos());
+
+				if (detect_x < 500 && detect_y < 500)
+				{
+					if (PoNx == -1 && PoNy == -1)
+					{
+						double rotate_angle = atan2((double)(detect_y), (double)(detect_x)) * 180 / M_PI;
+						pet.SetRolateAngle(rotate_angle);
+						pet.SetPetFlip(SDL_FLIP_NONE);
+					}
+					else if (PoNx == 1 && PoNy == -1)
+					{
+						double rotate_angle = atan2((double)(detect_y), (double)(detect_x)) * 180 / M_PI;
+						rotate_angle = 180 - rotate_angle;
+						pet.SetRolateAngle(rotate_angle);
+						pet.SetPetFlip(SDL_FLIP_HORIZONTAL);
+					}
+					else if (PoNx == 1 && PoNy == 1)
+					{
+						double rotate_angle = atan2((double)(detect_y), (double)(detect_x)) * 180 / M_PI;
+						rotate_angle = 180 + rotate_angle;
+						pet.SetRolateAngle(rotate_angle);
+						pet.SetPetFlip(SDL_FLIP_HORIZONTAL);
+					}
+					else if (PoNx == -1 && PoNy == 1)
+					{
+						double rotate_angle = -atan2((double)(detect_y), (double)(detect_x)) * 180 / M_PI;
+						pet.SetRolateAngle(rotate_angle);
+						pet.SetPetFlip(SDL_FLIP_NONE);
+					}
+					pet.SetAttack(1);
+					pet.LoadBullet(gRender, 1, 1);
+					pet.PetShot(gRender, k);
+				}
+				else
+				{
+				 pet.SetAttack(0);
+				 pet.SetPetFlip(SDL_FLIP_NONE);
+
+				}
+				detect_x = INT_MAX;
+				detect_y = INT_MAX;
+				kc = 1e9; 	
+				pet.SetMap(k.start_x, k.start_y);
+				pet.Show(gRender);
 
 				Option_Button.setRect(WIDTH-Option_Button.get_button_w(), HEIGHT-Option_Button.get_button_h());
 				Option_Button.Render(gRender);
+
+				Mute_.setRect(WIDTH - Option_Button.get_button_w(), HEIGHT - Option_Button.get_button_h() - Mute_.get_button_h());
+				Mute_.Render(gRender);
 				
 				//DisPlay Threat
 				for (int i = 0; i < list_Threat.size(); i++)
@@ -494,6 +592,29 @@ int main(int arc, char* argv[])
 						Golem->Do_Threat(k, gRender);
 						Golem->T_move(gRender,ex.get_x_pos(),ex.get_y_pos());
 						Golem->T_Make_Bullet(gRender);
+						int l = abs(pet.GetYPos() - Golem->get_T_y_pos()) * abs(pet.GetYPos() - Golem->get_T_y_pos()) + abs(pet.GetXPos() - Golem->get_T_x_pos()) * abs(pet.GetXPos() - Golem->get_T_x_pos());
+						if (kc > sqrt(l))
+						{
+							kc = sqrt(l);
+							detect_x = abs(pet.GetXPos() - Golem->get_T_x_pos());
+							if (detect_x == 0)
+							{
+								PoNx = 1;
+							}
+							else
+							{
+								PoNx = (pet.GetXPos() - Golem->get_T_x_pos()) / detect_x;
+							}
+							detect_y = abs(pet.GetYPos() - Golem->get_T_y_pos());
+							if (detect_y == 0)
+							{
+								PoNy = 1;
+							}
+							else
+							{
+								PoNy = (pet.GetYPos() - Golem->get_T_y_pos()) / detect_y;
+							}
+						}
 						Golem->show(gRender);
 					}
 					else
@@ -502,10 +623,9 @@ int main(int arc, char* argv[])
 						Golem = NULL;
 					}
 				}
-
 				//Get Player Bullet
 				std::vector<Bullet*> list_Player_Bullet = ex.getBullet();
-
+				std::vector<Bullet*> list_Pet_bulelt = pet.GetBullet();
 				//Check Bullet Attack Threat
 				for (int i = 0; i < list_Player_Bullet.size(); i++)
 				{
@@ -542,6 +662,36 @@ int main(int arc, char* argv[])
 					}
 				}
 
+				for (int i = 0; i < list_Pet_bulelt.size(); i++)
+				{
+					Bullet* p_bullet = list_Pet_bulelt[i];
+					if (p_bullet != NULL)
+					{
+						for (int j = 0; j < list_Threat.size(); j++)
+						{
+							Threat* threat_ = list_Threat[j];
+							if (threat_ != NULL)
+							{
+								SDL_Rect p_bull = p_bullet->getRect();
+								SDL_Rect threat_rect = threat_->T_getRect();
+								bool col = Common::CheckCollision(p_bull, threat_rect);
+								if (col)
+								{
+									threat_->Decresae_HP(dame_player);
+									pet.Remove_Bullet(i);
+									if (threat_->Get_Hp_Threat() <= 0)
+									{
+										g_fire.set_fire_pos(threat_->get_T_x_pos(), threat_->get_T_y_pos());
+										ex.Increase_Score();
+										list_Threat.erase(list_Threat.begin() + j);
+										threat_ = NULL;
+									}
+								}
+
+							}
+						}
+					}
+				}
 
 				//Check Player colis Threat
 				for (int i = 0; i < list_Threat.size(); i++)
@@ -677,8 +827,19 @@ int main(int arc, char* argv[])
 					ex.set_Score();
 				}
 
-				if (option)
+				while (option)
 				{
+					while (SDL_PollEvent(&e) != 0)
+					{
+						if (e.type == SDL_QUIT)
+						{
+							q = 1;
+							play = 0;
+						}
+						Play_Again_Button.HandleReplayButton(e, gRender, menu, play, howToPlay, s, hp, option, play_again, list_Threat, win, gChunk);
+						Menu_Button.HandleMenuButton(e, gRender, menu, play, quitMenu, hp, option, play_again, list_Threat, gChunk);
+						Quit.HandleQuit(e, gRender, menu, play, q, gChunk);
+					}
 					Frame_Menu.Render(gRender);
 
 					Play_Again_Button.setRect(WIDTH / 2 - Play_Again_Button.get_button_w() / 2, 300);
@@ -689,10 +850,25 @@ int main(int arc, char* argv[])
 
 					Quit.setRect(WIDTH / 2 - Quit.get_button_w() / 2, 500);
 					Quit.Render(gRender);
+
+					SDL_RenderPresent(gRender);
 				}
 				if (play_again||menu)
 				{
+					if (play_again)
+					{
+						int t = 0;
+						while (t <= 250)
+						{
+							Loading[(t / 16) % 4].setRect(0, 0);
+							Loading[(t / 16) % 4].Render(gRender);
+							cerr << t << endl;
+							SDL_RenderPresent(gRender);
+							t++;
+						}
+					}
 					ex.setPos(200, 300);
+					pet.SetPos(100, 200);
 					for (int i = 0; i < list_Threat.size(); i++)
 					{
 						list_Threat[i]->free();
@@ -739,6 +915,7 @@ int main(int arc, char* argv[])
 				if (play_again)
 				{
 					play = 1;
+					pet.SetPos(100, 200);
 				}
 				else if (q)
 				{
@@ -775,6 +952,7 @@ int main(int arc, char* argv[])
 				if (play_again)
 				{
 					play = 1;
+					pet.SetPos(100, 200);
 				}
 				else if (q)
 				{

@@ -117,11 +117,6 @@ void Threat::Do_Threat(Map& map_data,SDL_Renderer*render)
 		}
 		CheckMap(map_data);
 	}
-	else
-	{
-		//T_cb_time--;
-		//Die_Threat("img//threat//vanish.png", render);
-	}
 }
 
 void Threat::CheckMap(Map& data_map)
@@ -351,16 +346,12 @@ void Threat::Act_Threat(const int &x, const int &y,Map& map_data, SDL_Renderer* 
 		{
 			T_input_move.left = 1;
 			T_input_move.right = 0;
-			std::cout <<"x = " <<x << " x_pos = " << x_pos << std::endl;
-			std::cout << std::endl;
 			Do_Threat(map_data, render);
 		}
 		else if (x_pos < x-4 && x_pos < Lim_Area_Right-10)
 		{
 			T_input_move.left = 0;
 			T_input_move.right = 1;
-			std::cout << "x = " << x << " x_pos = " << x_pos << std::endl;
-			std::cout << std::endl;
 			Do_Threat(map_data, render);
 		}
 		else
@@ -373,16 +364,12 @@ void Threat::Act_Threat(const int &x, const int &y,Map& map_data, SDL_Renderer* 
 		{
 			T_input_move.up = 0;
 			T_input_move.down = 1;
-			std::cout << "y = " << y << " y_pos = " << y_pos << std::endl;
-			std::cout << std::endl;
 			Do_Threat(map_data, render);
 		}
 		else if (y_pos > y+4 && y_pos > Lim_Area_Up+10)
 		{
 			T_input_move.up = 1;
 			T_input_move.down = 0;
-			std::cout << "y = " << y << " y_pos = " << y_pos << std::endl;
-			std::cout << std::endl;
 			Do_Threat(map_data, render);
 		}
 		else

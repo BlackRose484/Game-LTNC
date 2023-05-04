@@ -24,6 +24,8 @@ static SDL_Event e;
 static TTF_Font* gFont = NULL;
 static Mix_Chunk* gChunk = NULL;
 static Mix_Chunk* gChunk1 = NULL;
+static Mix_Chunk* chunk_win = NULL;
+static Mix_Chunk* chunk_death = NULL;
 static Mix_Music* gMusic = NULL;
 
 const Uint8 R = 255;
@@ -37,12 +39,14 @@ const Uint8 A = 255;
 #define TILE_SIZE 64
 
 #define SPEED 10
-#define BULLET_SPEED 15 
+#define BULLET_SPEED 12 
 #define LIM_DIS_BULLET 700
 
 #define LIM_DIS_BULLET_T 200
 #define T_BULLET_SPEED 4
 #define T_SPEED 1
+
+#define LOADING 150
 
 
 

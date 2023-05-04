@@ -60,3 +60,16 @@ void Base::setRect(const int& x, const int& y)
 	O_Rect.x = x;
 	O_Rect.y = y;
 }
+
+void Base::RenderMiniMap(SDL_Renderer* render, const int& x, const int& y)
+{
+	SDL_Rect clip = { x/9.0,y/9.0,150,150 };
+	SDL_Rect renderQ = { O_Rect.x,O_Rect.y,150,150 };
+	SDL_RenderCopy(render, OBJ, &clip, &renderQ);
+}
+
+void Base::setRectLocate(const double& x, const double& y)
+{
+	O_Rect.x = x;
+	O_Rect.y = y;
+}

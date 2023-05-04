@@ -17,14 +17,20 @@
 int hp_player;
 int dame_player;
 int money;
+int have_pet;
+int dame_pet;
 
 int plus_hp = 1;
 int plus_dame = 5;
-int volume = 10;
+int volume = 50;
+int volume_chunk = 50;
 int temp_volume = 0;
+int plus_dame_pet = 5;
 
 int cost_plus_hp = 100;
 int cost_plus_dame = 100;
+int cost_pet = 2000;
+int cost_plus_dame_pet = 200;
 
 bool init()
 {
@@ -34,7 +40,6 @@ bool init()
 	//Initialize SDL
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 	{
-		printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
 		success = false;
 	}
 	else
@@ -49,7 +54,6 @@ bool init()
 		gWindow = SDL_CreateWindow("hello game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
 		if (gWindow == NULL)
 		{
-			printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
 			success = false;
 		}
 		else
@@ -58,7 +62,6 @@ bool init()
 			gRender = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 			if (gRender == NULL)
 			{
-				printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
 				success = false;
 			}
 			else
@@ -70,19 +73,16 @@ bool init()
 				int imgFlags = IMG_INIT_PNG;
 				if (!(IMG_Init(imgFlags) & imgFlags))
 				{
-					printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
 					success = false;
 				}
 				//Initialize SDL_ttf
 				if (TTF_Init() == -1)
 				{
-					printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
 					success = false;
 				}
 				//Initialize SDL_mixer
 				if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) < 0)
 				{
-					printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
 					success = false;
 				}
 			}
@@ -111,6 +111,8 @@ int main(int arc, char* argv[])
 	hp_player = get_from_file("Update//hp_player.txt");
 	dame_player = get_from_file("Update//dame_player.txt");
 	money = get_from_file("Update//money.txt");
+	have_pet = get_from_file("Update//have_pet.txt");
+	dame_pet = get_from_file("Update//dame_pet.txt");
 
 	if (!init())
 	{
@@ -120,10 +122,12 @@ int main(int arc, char* argv[])
 	else
 	{
 		//Set Font and Music
-		gFont = TTF_OpenFont("font//Neverwinter.ttf", 45);
-		gMusic = Mix_LoadMUS("sound//action.mid");
+		gFont = TTF_OpenFont("font//Neverwinter.ttf", 40);
+		gMusic = Mix_LoadMUS("sound//sound1.mp3");
 		gChunk = Mix_LoadWAV("asset//sound_effect//switch.wav");
 		gChunk1 = Mix_LoadWAV("asset//sound_effect//upgrade_sound_effect.wav");
+		chunk_win = Mix_LoadWAV("sound//victory.wav");
+		chunk_death = Mix_LoadWAV("sound//complete.wav");
 		Mix_PlayMusic(gMusic, -1);
 		Mix_VolumeMusic(volume);
 		SDL_Color gColor = { 0,0,0,255 };
@@ -145,9 +149,9 @@ int main(int arc, char* argv[])
 
 		//Pet
 		Pet pet;
-		pet.Set_N_frame(5);
-		pet.Set_N_frame_attack(11);
-		pet.LoadImage("img//Threat//T_wolf.png", gRender);
+		pet.Set_N_frame(8);
+		pet.Set_N_frame_attack(10);
+		pet.LoadImage("img//Threat//Pet.png", gRender);
 		pet.SetAttack(0);
 		pet.SetClip();
 		pet.SetPos(100, 200);
@@ -196,8 +200,6 @@ int main(int arc, char* argv[])
 
 
 		//Init menu 
-		Menu menu_;
-
 		Base Frame_Menu;
 		Frame_Menu.LoadImage("img//Menu//Button//frame_menu.png", gRender);
 		Frame_Menu.setRect(WIDTH/2-Frame_Menu.getRect().w/2, HEIGHT/2-Frame_Menu.getRect().h/2);
@@ -217,6 +219,7 @@ int main(int arc, char* argv[])
 		bool win = false;
 		bool lose = false;
 		bool mute = false;
+		bool back_to_game = false;
 
 		//Some Button For Game
 		Button Play_Button;
@@ -231,14 +234,23 @@ int main(int arc, char* argv[])
 		Button Map[2];
 		Button Quit;
 		Button Quit_Menu;
+		Button Setting;
+		Button IncreaseVolume_;
+		Button IncreaseVolumeChunk;
+		Button DecreaseVolume_;
+		Button DecreaseVolumeChunk;
 		Button Update_Player_HP;
 		Button Update_Player_Dame;
 		Button Mute_;
+		Button Back_To_Game;
+		Button Unlock_Pet;
+		Button Update_Pet_Dame;
 
 		//Text
 		Text Cur_Hp;
 		Text Cur_Attack;
 		Text Cur_Money;
+		Text Cur_Pet_Dame;
 
 		//Help Game
 		Base Help[8];
@@ -265,10 +277,27 @@ int main(int arc, char* argv[])
 		Base Menu_bg;
 		Menu_bg.LoadImage("img//Menu//menu.jpg", gRender, 1, 3, 5);
 
+		Base shadow;
+		shadow.LoadImage("img//Player//shadow.png", gRender);
 
 		Base Update_player;
 		Update_player.LoadImage("Update//update_kinght.png", gRender, 1, 2, 3);
-		Update_player.setRect(WIDTH / 2 - Update_player.getRect().w / 2, HEIGHT / 2 - Update_player.getRect().h / 2);
+		Update_player.setRect(WIDTH / 2 - Update_player.getRect().w-100, HEIGHT / 2 - Update_player.getRect().h / 2);
+
+		Base Update_Pet;
+		Update_Pet.LoadImage("Update//update_pet.png", gRender, 1, 2, 3);
+		Update_Pet.setRect(WIDTH / 2 + 100, HEIGHT / 2 - Update_Pet.getRect().h / 2);
+
+		Base Setting_base;
+		Setting_base.LoadImage("Update//setting.png", gRender, 1, 2, 3);
+		Setting_base.setRect(WIDTH / 2 - Setting_base.getRect().w / 2, HEIGHT / 2 - Setting_base.getRect().h / 2);
+
+		Base Mini_map;
+		Mini_map.LoadImage("map//minimap.png", gRender);
+		Mini_map.setRect(0, HEIGHT - 150);
+
+		Base Locate;
+		Locate.LoadImage("map//locate.png", gRender);
 
 		Base Money;
 		Money.LoadImage("img//SP_item//money.png", gRender);
@@ -281,14 +310,13 @@ int main(int arc, char* argv[])
 
 		//Game Loop
 		while (!q)
-		{    
+		{   
 			if (hello_game)
 			{
 				int t = 0;
-				while (t <= 250)
+				while (t <= LOADING)
 				{
 					HelloGame.Render(gRender);
-					cerr << t << endl;
 					SDL_RenderPresent(gRender);
 					t++;
 				}
@@ -305,7 +333,8 @@ int main(int arc, char* argv[])
 					}
 					Play_Button.HandlePlay(e, gRender, menu, play, quitMenu, gChunk);
 					Help_Button.HandleHowToPlayButton(e, gRender, menu, play, quitMenu, howToPlay, gChunk);
-					Select_Map_Button.SelectMapButton(e, gRender, menu, play, quitMenu, select_map, gChunk);
+					//Select_Map_Button.SelectMapButton(e, gRender, menu, play, quitMenu, select_map, gChunk);
+					Setting.HandleSetting(e, gRender, menu, play, quitMenu, setting, gChunk);
 					Update_Button.HandleUpgradeButton(e, gRender, menu, play, howToPlay, upgrade, gChunk);
 					Quit_Menu.HandleQuitMenu(e, gRender, menu, play, q, gChunk);
 				}
@@ -321,16 +350,19 @@ int main(int arc, char* argv[])
 
 				Help_Button.setRect(100, 200);
 				Help_Button.Render(gRender);
+			
+				//Select_Map_Button.setRect(100, 300);
+				//Select_Map_Button.Render(gRender);
 
-				
-				Select_Map_Button.setRect(100, 300);
-				Select_Map_Button.Render(gRender);
+				Setting.setRect(100, 300);
+				Setting.Render(gRender);
 
 				Update_Button.setRect(100, 400);
 				Update_Button.Render(gRender);
 
 				Quit_Menu.setRect(100, 500);
 				Quit_Menu.Render(gRender);
+
 				
 
 				SDL_RenderPresent(gRender);
@@ -347,7 +379,7 @@ int main(int arc, char* argv[])
 
 					}
 
-					Get_Back_Button.HandleGetBackButton(e, gRender, menu, play, quitMenu, howToPlay, upgrade,gChunk);
+					Get_Back_Button.HandleGetBackButton(e, gRender, menu, play, quitMenu, howToPlay, upgrade,setting,gChunk);
 					Next_Button.NextButton(e, gRender, idx_help, gChunk);
 				}
 				SDL_SetRenderDrawColor(gRender, 100, 100, 0, 100);
@@ -380,7 +412,7 @@ int main(int arc, char* argv[])
 						q = true;
 						select_map = 0;
 					}
-					Get_Back_Button.HandleGetBackButton(e, gRender, menu, play, quitMenu, select_map, upgrade, gChunk);
+					Get_Back_Button.HandleGetBackButton(e, gRender, menu, play, quitMenu, select_map, upgrade,setting, gChunk);
 					Map[0].ChooseMap1(e, gRender, menu, play, quitMenu, map1,select_map, gChunk);
 					Map[1].ChooseMap1(e, gRender, menu, play, quitMenu, map2,select_map, gChunk);
 				}
@@ -418,9 +450,18 @@ int main(int arc, char* argv[])
 					{
 						q = 1;
 					}
-					Update_Player_HP.HandleUpgrade(e, gRender, cost_plus_hp, hp_player, plus_hp, money,gChunk1);
+					if(have_pet)
+					{
+						Update_Pet_Dame.HandleUpgrade(e, gRender, cost_plus_dame_pet, dame_pet, plus_dame_pet, money, gChunk1);
+						
+					}
+					else
+					{
+						Unlock_Pet.UnlockPet(e, gRender,cost_pet, have_pet, money, gChunk1);
+					}
+					Update_Player_HP.HandleUpgrade(e, gRender, cost_plus_hp, hp_player, plus_hp, money, gChunk1);
 					Update_Player_Dame.HandleUpgrade(e, gRender, cost_plus_hp, dame_player, plus_dame, money, gChunk1);
-					Get_Back_Button.HandleGetBackButton(e, gRender, menu, play, quitMenu, howToPlay, upgrade, gChunk);
+					Get_Back_Button.HandleGetBackButton(e, gRender, menu, play, quitMenu, howToPlay, upgrade,setting, gChunk);
 				}
 				
 				SDL_SetRenderDrawColor(gRender, 0, 0, 0, 255);
@@ -433,18 +474,20 @@ int main(int arc, char* argv[])
 
 				SDL_Color Color = { 255,255,255,255 };
 
+				//Update Player
 				Cur_Hp.setColor(Color);
 				Cur_Attack.setColor(Color);
 				Cur_Money.setColor(Color);
+				Cur_Pet_Dame.setColor(Color);
 
 				Cur_Hp.setText(convert_to_String(hp_player));
 				Cur_Hp.LoadText(gFont, gRender);
-				Cur_Hp.setRect(850, 330);
+				Cur_Hp.setRect(425, 345);
 				Cur_Hp.Render(gRender);
 
 				Cur_Attack.setText(convert_to_string(dame_player));
 				Cur_Attack.LoadText(gFont, gRender);
-				Cur_Attack.setRect(900, 420);
+				Cur_Attack.setRect(465, 420);
 				Cur_Attack.Render(gRender);
 
 				Cur_Money.setText(convert_to_string(money));
@@ -457,16 +500,78 @@ int main(int arc, char* argv[])
 				Money.Render(gRender);
 				
 				
-				Update_Player_HP.setRect(990, 330);
+				Update_Player_HP.setRect(530, 340);
 				Update_Player_HP.Render(gRender);
 
-				Update_Player_Dame.setRect(990, 420);
+				Update_Player_Dame.setRect(530, 420);
 				Update_Player_Dame.Render(gRender);
+
+
+
+				if(!have_pet)
+				{
+					Unlock_Pet.setRect(WIDTH / 2 + 100, HEIGHT / 2 - Update_Pet.getRect().h / 2);
+					Unlock_Pet.Render(gRender);
+				}
+				else
+				{
+					Update_Pet.Render(gRender);
+
+					Update_Pet_Dame.setRect(1355, 421);
+					Update_Pet_Dame.Render(gRender);
+
+					Cur_Pet_Dame.setText(convert_to_String(dame_pet));
+					Cur_Pet_Dame.LoadText(gFont, gRender);
+					Cur_Pet_Dame.setRect(1274, 425);
+					Cur_Pet_Dame.Render(gRender);
+				}
 
 				Get_Back_Button.setRect(10, 10);
 				Get_Back_Button.Render(gRender);
 
 				SDL_RenderPresent(gRender);
+			}
+
+			if (setting)
+			{
+				while (SDL_PollEvent(&e) != 0)
+				{
+					if (e.type == SDL_QUIT)
+					{
+						q = true;
+					}
+					Get_Back_Button.HandleGetBackButton(e, gRender, menu, play, quitMenu, howToPlay, upgrade,setting, gChunk);
+					IncreaseVolume_.IncreaseVolume(e, gRender, volume, gChunk);
+					IncreaseVolumeChunk.IncreaseVolumeChunk(e, gRender, volume_chunk, gChunk);
+					DecreaseVolume_.DecreaseMusic(e, gRender, volume, gChunk);
+					DecreaseVolumeChunk.DecreaseChunk(e, gRender, volume_chunk, gChunk);
+				}
+
+				SDL_SetRenderDrawColor(gRender, 0, 0, 0, 255);
+				SDL_RenderClear(gRender);
+
+				Menu_bg.LoadImage("img//Menu//upgrade_background.png", gRender);
+				Menu_bg.Render(gRender);
+
+				Setting_base.Render(gRender);
+
+				Get_Back_Button.setRect(10, 10);
+				Get_Back_Button.Render(gRender);
+
+				DecreaseVolume_.setRect(620, 361);
+				DecreaseVolume_.Render(gRender);
+
+				DecreaseVolumeChunk.setRect(620, 461);
+				DecreaseVolumeChunk.Render(gRender);
+
+				IncreaseVolume_.setRect(860, 361);
+				IncreaseVolume_.Render(gRender);
+
+				IncreaseVolumeChunk.setRect(860, 461);
+				IncreaseVolumeChunk.Render(gRender);
+
+				SDL_RenderPresent(gRender);
+
 			}
 
 			int s = 0;
@@ -479,15 +584,15 @@ int main(int arc, char* argv[])
 			if (play || play_again)
 			{
 				int t = 0;
-				while (t <= 250)
+				while (t <= LOADING)
 				{
 					Loading[(t / 16) % 4].setRect(0, 0);
 					Loading[(t / 16) % 4].Render(gRender);
-					cerr << t << endl;
 					SDL_RenderPresent(gRender);
 					t++;
 				}
 			}
+
 			while(play)
 			{	
 				while (SDL_PollEvent(&e) != 0)
@@ -526,6 +631,8 @@ int main(int arc, char* argv[])
 				ex.P_Shot(gRender, k);
 
 				//Display Player
+				shadow.setRect(ex.P_getRect().x+12, ex.P_getRect().y+ex.P_getRect().h-20);
+				shadow.Render(gRender);
 				ex.Show(gRender);
 				pet.PetMove(ex.get_x_pos(), ex.get_y_pos());
 
@@ -557,21 +664,27 @@ int main(int arc, char* argv[])
 						pet.SetRolateAngle(rotate_angle);
 						pet.SetPetFlip(SDL_FLIP_NONE);
 					}
-					pet.SetAttack(1);
-					pet.LoadBullet(gRender, 1, 1);
-					pet.PetShot(gRender, k);
+					if(have_pet)
+					{
+						pet.SetAttack(1);
+						pet.LoadBullet(gRender, 1, 1);
+						pet.PetShot(gRender, k);
+					}
 				}
 				else
 				{
 				 pet.SetAttack(0);
-				 pet.SetPetFlip(SDL_FLIP_NONE);
+				 //pet.SetPetFlip(SDL_FLIP_NONE);
 
 				}
 				detect_x = INT_MAX;
 				detect_y = INT_MAX;
 				kc = 1e9; 	
 				pet.SetMap(k.start_x, k.start_y);
-				pet.Show(gRender);
+				if(have_pet)
+				{
+					pet.Show(gRender);
+				}
 
 				Option_Button.setRect(WIDTH-Option_Button.get_button_w(), HEIGHT-Option_Button.get_button_h());
 				Option_Button.Render(gRender);
@@ -579,6 +692,10 @@ int main(int arc, char* argv[])
 				Mute_.setRect(WIDTH - Option_Button.get_button_w(), HEIGHT - Option_Button.get_button_h() - Mute_.get_button_h());
 				Mute_.Render(gRender);
 				
+				Mini_map.RenderMiniMap(gRender, k.start_x, k.start_y);
+				Locate.setRectLocate((ex.get_x_pos() - k.start_x) / 9-ex.get_x_pos()/250-1, HEIGHT - 150 + (ex.get_y_pos() - k.start_y) / 9 - ex.get_y_pos() / 250);
+				Locate.Render(gRender);
+
 				//DisPlay Threat
 				for (int i = 0; i < list_Threat.size(); i++)
 				{
@@ -661,33 +778,35 @@ int main(int arc, char* argv[])
 						}
 					}
 				}
-
-				for (int i = 0; i < list_Pet_bulelt.size(); i++)
+				if(have_pet)
 				{
-					Bullet* p_bullet = list_Pet_bulelt[i];
-					if (p_bullet != NULL)
+					for (int i = 0; i < list_Pet_bulelt.size(); i++)
 					{
-						for (int j = 0; j < list_Threat.size(); j++)
+						Bullet* p_bullet = list_Pet_bulelt[i];
+						if (p_bullet != NULL)
 						{
-							Threat* threat_ = list_Threat[j];
-							if (threat_ != NULL)
+							for (int j = 0; j < list_Threat.size(); j++)
 							{
-								SDL_Rect p_bull = p_bullet->getRect();
-								SDL_Rect threat_rect = threat_->T_getRect();
-								bool col = Common::CheckCollision(p_bull, threat_rect);
-								if (col)
+								Threat* threat_ = list_Threat[j];
+								if (threat_ != NULL)
 								{
-									threat_->Decresae_HP(dame_player);
-									pet.Remove_Bullet(i);
-									if (threat_->Get_Hp_Threat() <= 0)
+									SDL_Rect p_bull = p_bullet->getRect();
+									SDL_Rect threat_rect = threat_->T_getRect();
+									bool col = Common::CheckCollision(p_bull, threat_rect);
+									if (col)
 									{
-										g_fire.set_fire_pos(threat_->get_T_x_pos(), threat_->get_T_y_pos());
-										ex.Increase_Score();
-										list_Threat.erase(list_Threat.begin() + j);
-										threat_ = NULL;
+										threat_->Decresae_HP(dame_pet);
+										pet.Remove_Bullet(i);
+										if (threat_->Get_Hp_Threat() <= 0)
+										{
+											g_fire.set_fire_pos(threat_->get_T_x_pos(), threat_->get_T_y_pos());
+											ex.Increase_Score();
+											list_Threat.erase(list_Threat.begin() + j);
+											threat_ = NULL;
+										}
 									}
-								}
 
+								}
 							}
 						}
 					}
@@ -811,7 +930,7 @@ int main(int arc, char* argv[])
 				////Display Time,Check Time and display clock 
 
 				int t = time_game.get_time() / 1000.f;
-				std::string _time = std::to_string(300 - t);
+				std::string _time = std::to_string(t);
 				time.setText(_time);
 				time.LoadText(gFont, gRender);
 				time.setRect(WIDTH / 2 - 10, 0);
@@ -819,13 +938,13 @@ int main(int arc, char* argv[])
 
 				g_clock.setRect(time.getRect().x - g_clock.get_clock_w(), 0);
 				g_clock.Clock_Show(gRender);
-				if (t >= 300)
+				/*if (t >= 300)
 				{
 					ex.setPos(250, 300);
 					ex.set_status(Player::dir::none);
 					ex.set_default_move();
 					ex.set_Score();
-				}
+				}*/
 
 				while (option)
 				{
@@ -835,34 +954,40 @@ int main(int arc, char* argv[])
 						{
 							q = 1;
 							play = 0;
+							option = 0;
 						}
 						Play_Again_Button.HandleReplayButton(e, gRender, menu, play, howToPlay, s, hp, option, play_again, list_Threat, win, gChunk);
 						Menu_Button.HandleMenuButton(e, gRender, menu, play, quitMenu, hp, option, play_again, list_Threat, gChunk);
-						Quit.HandleQuit(e, gRender, menu, play, q, gChunk);
+						Quit.HandleQuit(e, gRender, menu, play,option, q, gChunk);
+						Back_To_Game.HanldeBackToGame(e, gRender, option, gChunk);
 					}
 					Frame_Menu.Render(gRender);
 
-					Play_Again_Button.setRect(WIDTH / 2 - Play_Again_Button.get_button_w() / 2, 300);
+					Play_Again_Button.setRect(WIDTH / 2 - Play_Again_Button.get_button_w() / 2, 325);
 					Play_Again_Button.Render(gRender);
 
-					Menu_Button.setRect(WIDTH / 2 - Menu_Button.get_button_w() / 2, 400);
+					Menu_Button.setRect(WIDTH / 2 - Menu_Button.get_button_w() / 2, 425);
 					Menu_Button.Render(gRender);
 
-					Quit.setRect(WIDTH / 2 - Quit.get_button_w() / 2, 500);
+					Quit.setRect(WIDTH / 2 - Quit.get_button_w() / 2, 525);
 					Quit.Render(gRender);
+
+					Back_To_Game.setRect(WIDTH / 2 - Quit.get_button_w() / 2, 225);
+					Back_To_Game.Render(gRender);
+
 
 					SDL_RenderPresent(gRender);
 				}
+
 				if (play_again||menu)
 				{
 					if (play_again)
 					{
 						int t = 0;
-						while (t <= 250)
+						while (t <= LOADING)
 						{
 							Loading[(t / 16) % 4].setRect(0, 0);
 							Loading[(t / 16) % 4].Render(gRender);
-							cerr << t << endl;
 							SDL_RenderPresent(gRender);
 							t++;
 						}
@@ -890,6 +1015,7 @@ int main(int arc, char* argv[])
 
 			if (win)
 			{
+				Mix_PlayChannel(-1, chunk_win, 1);
 				while (SDL_PollEvent(&e) != 0)
 				{
 					if (e.type == SDL_QUIT)
@@ -897,7 +1023,7 @@ int main(int arc, char* argv[])
 						q = 1;
 					}
 					Play_Again_Button.HandleReplayButton(e, gRender, menu, play, howToPlay,s, hp, option, play_again, list_Threat,win, gChunk);
-					Quit.HandleQuit(e, gRender, menu, play, q, gChunk);
+					Quit.HandleQuit(e, gRender, menu, play,option, q, gChunk);
 				}
 				
 				SDL_RenderClear(gRender);
@@ -927,6 +1053,7 @@ int main(int arc, char* argv[])
 
 			if (lose)
 			{
+				Mix_PlayChannel(-1, chunk_death, 1);
 				while (SDL_PollEvent(&e) != 0)
 				{
 					if (e.type == SDL_QUIT)
@@ -934,7 +1061,7 @@ int main(int arc, char* argv[])
 						q = 1;
 					}
 					Play_Again_Button.HandleReplayButton(e, gRender, menu, play, howToPlay, s, hp, option, play_again, list_Threat, lose, gChunk);
-					Quit.HandleQuit(e, gRender, menu, play, q, gChunk);
+					Quit.HandleQuit(e, gRender, menu, play,option, q, gChunk);
 				}
 
 				SDL_RenderClear(gRender);
@@ -965,6 +1092,8 @@ int main(int arc, char* argv[])
 			update("Update//hp_player.txt", hp_player);
 			update("Update//dame_player.txt", dame_player);
 			update("Update//money.txt", money);
+			update("Update//have_pet.txt", have_pet);
+			update("Update//dame_pet.txt", dame_pet);
 
 		}
 			//free player

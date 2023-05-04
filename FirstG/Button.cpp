@@ -94,7 +94,7 @@ void Button::HandleHowToPlayButton(SDL_Event& e, SDL_Renderer* render, bool& men
 	}
 }
 
-void Button::HandleGetBackButton(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quitMenu, bool& howToPlay, bool& upgrade, Mix_Chunk* sound_effect)
+void Button::HandleGetBackButton(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quitMenu, bool& howToPlay, bool& upgrade,bool &setting, Mix_Chunk* sound_effect)
 {
 	if (isInside(e))
 	{
@@ -107,6 +107,7 @@ void Button::HandleGetBackButton(SDL_Event& e, SDL_Renderer* render, bool& menu,
 			menu = true;
 			howToPlay = false;
 			upgrade = false;
+			setting = false;
 		}
 	}
 	else
@@ -290,7 +291,7 @@ void Button::ChooseMap2(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& pl
 	}
 }
 
-void Button::HandleQuit(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quit, Mix_Chunk* sound_effect)
+void Button::HandleQuit(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play,bool &option, bool& quit, Mix_Chunk* sound_effect)
 {
 	if (isInside(e))
 	{
@@ -302,13 +303,14 @@ void Button::HandleQuit(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& pl
 			menu = false;
 			play = false;
 			quit = true;
+			option = false;
 		}
 	}
 	else
 		LoadImage("img//Menu//Button//quit.png", render,1,2,3);
 }
 
-void Button::HandleQuitMenu(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quit, Mix_Chunk* sound_effect)
+void Button:: HandleQuitMenu(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quit, Mix_Chunk* sound_effect)
 {
 	if (isInside(e))
 	{
@@ -404,5 +406,135 @@ void Button::Mute(SDL_Event& e, SDL_Renderer* render, int& volume, int& temp_vol
 		{
 			LoadImage("img/Menu/Button/music_mute.png", render, 1, 3, 5);
 		}
+	}
+}
+
+void Button::IncreaseVolumeChunk(SDL_Event& e, SDL_Renderer* render, int& volume, Mix_Chunk* sound_effect)
+{
+	if (isInside(e))
+	{
+		LoadImage("img//Menu//Button//upgrade_button_select.png", render);
+		if (e.type == SDL_MOUSEBUTTONDOWN)
+		{
+			Mix_PlayChannel(-1, sound_effect, 0);
+			volume += 10;
+			Mix_VolumeChunk(sound_effect, volume);
+		}
+	}
+	else
+	{
+		LoadImage("img//Menu//Button//upgrade_button.png", render);
+	}
+}
+
+void Button::HandleSetting(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quit, bool& setting, Mix_Chunk* sound_effect)
+{
+	if (isInside(e))
+	{
+		LoadImage("img/Menu/Button/setting_select.png", render, 1, 3, 5);
+		if (e.type == SDL_MOUSEBUTTONDOWN)
+		{
+			Mix_PlayChannel(-1, sound_effect, 0);
+			play = false;
+			quit = false;
+			menu = false;
+			setting = true;
+		}
+	}
+	else
+	{
+		LoadImage("img/Menu/Button/setting.png", render, 1, 3, 5);
+	}
+}
+
+void Button::IncreaseVolume(SDL_Event& e, SDL_Renderer* render, int& volume, Mix_Chunk* sound_effect)
+{
+	if (isInside(e))
+	{
+		LoadImage("img//Menu//Button//upgrade_button_select.png", render);
+		if (e.type == SDL_MOUSEBUTTONDOWN)
+		{
+			Mix_PlayChannel(-1, sound_effect, 0);
+			volume += 10;
+			Mix_VolumeMusic(volume);
+		}
+	}
+	else
+	{
+		LoadImage("img//Menu//Button//upgrade_button.png", render);
+	}
+}
+
+void Button::HanldeBackToGame(SDL_Event& e, SDL_Renderer* render, bool& option, Mix_Chunk* sound_effect)
+{
+	if (isInside(e))
+	{
+		LoadImage("img//Menu//Button//back_to_game_select.png", render,1,3,5);
+		if (e.type == SDL_MOUSEBUTTONDOWN)
+		{
+			Mix_PlayChannel(-1, sound_effect, 0);
+			option = false;
+		}
+	}
+	else
+	{
+		LoadImage("img//Menu//Button//back_to_game.png", render,1,3,5);
+	}
+}
+
+void Button::DecreaseMusic(SDL_Event& e, SDL_Renderer* render, int& volume, Mix_Chunk* sound_effect)
+{
+	if (isInside(e))
+	{
+		LoadImage("img//Menu//Button//decrease_select.png", render);
+		if (e.type == SDL_MOUSEBUTTONDOWN)
+		{
+			Mix_PlayChannel(-1, sound_effect, 0);
+			volume -= 10;
+			Mix_VolumeMusic(volume);
+		}
+	}
+	else
+	{
+		LoadImage("img//Menu//Button//decrease.png", render);
+	}
+}
+
+void Button::DecreaseChunk(SDL_Event& e, SDL_Renderer* render, int& volume, Mix_Chunk* sound_effect)
+{
+	if (isInside(e))
+	{
+		LoadImage("img//Menu//Button//decrease_select.png", render);
+		if (e.type == SDL_MOUSEBUTTONDOWN)
+		{
+			Mix_PlayChannel(-1, sound_effect, 0);
+			volume -= 10;
+			Mix_VolumeChunk(sound_effect,volume);
+		}
+	}
+	else
+	{
+		LoadImage("img//Menu//Button//decrease.png", render);
+	}
+}
+
+void Button:: UnlockPet(SDL_Event& e, SDL_Renderer* render, int& money_needed_to_unlock, int& be_unlock, int& current_money, Mix_Chunk* sound_effect)
+{
+	if (isInside(e))
+	{
+		LoadImage("Update//lock.png", render, 1, 2, 3);
+		if (e.type == SDL_MOUSEBUTTONDOWN)
+		{
+			Mix_PlayChannel(-1, sound_effect, 0);
+			if (current_money >= money_needed_to_unlock)
+			{
+				current_money -= money_needed_to_unlock;
+				be_unlock = 1;
+			}
+		}
+	}
+	else
+	{
+		LoadImage("Update//lock_select.png", render, 1, 2, 3);
 	}
 }

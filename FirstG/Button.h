@@ -24,7 +24,7 @@ public:
 
 	void HandleHowToPlayButton(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quit, bool& HowToPlay, Mix_Chunk* sound_effect);
 
-	void HandleGetBackButton(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quit, bool& howToPlay, bool& upgrade, Mix_Chunk* sound_effect);
+	void HandleGetBackButton(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quit, bool& howToPlay, bool& upgrade,bool &setting, Mix_Chunk* sound_effect);
 
 	void HandleQuitButton(SDL_Event& e, SDL_Renderer* render, bool& quit_game, bool& play, Mix_Chunk* sound_effect);
 
@@ -46,9 +46,27 @@ public:
 
 	void ChooseMap2(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quit, bool& map2, bool& select_map, Mix_Chunk* sound_effect);
 
-	void HandleQuit(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quit, Mix_Chunk* sound_effect);
+	void HandleQuit(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play,bool &option, bool& quit, Mix_Chunk* sound_effect);
+
+	//void HandleQuitMenu(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quit, Mix_Chunk* sound_effect);
 
 	void HandleQuitMenu(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quit, Mix_Chunk* sound_effect);
 
 	void Mute(SDL_Event& e, SDL_Renderer* render, int& volume, int& temp_volume, Mix_Chunk* sound_effect);
+
+	void IncreaseVolume(SDL_Event& e, SDL_Renderer* render, int& volume, Mix_Chunk* sound_effect);
+
+	//void IncreaseVolumeChunk(SDL_Event& e, SDL_Renderer* render, int& volume, Mix_Chunk* sound_effect);
+
+	void IncreaseVolumeChunk(SDL_Event& e, SDL_Renderer* render, int& volume, Mix_Chunk* sound_effect);
+
+	void HandleSetting(SDL_Event& e, SDL_Renderer* render, bool& menu, bool& play, bool& quit, bool& setting, Mix_Chunk* sound_effect);
+
+	void HanldeBackToGame(SDL_Event& e, SDL_Renderer* render, bool& option, Mix_Chunk* sound_effect);
+
+	void DecreaseMusic(SDL_Event& e, SDL_Renderer* render, int& volume, Mix_Chunk* sound_effect);
+
+	void DecreaseChunk(SDL_Event& e, SDL_Renderer* render, int& volume, Mix_Chunk* sound_effect);
+
+	void UnlockPet(SDL_Event& e, SDL_Renderer* render, int& money_needed_to_unlock, int& be_unlock, int& current_money, Mix_Chunk* sound_effect);
 };

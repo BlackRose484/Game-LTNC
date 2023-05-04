@@ -80,10 +80,12 @@ void Pet::PetMove(const int& x, const int& y)
 	if (x_pos < x - 100)
 	{
 		x_val += Pet_Speed;
+		pet_flip = SDL_FLIP_NONE;
 	}
 	else if (x_pos > x + 100)
 	{
 		x_val -= Pet_Speed;
+		pet_flip = SDL_FLIP_HORIZONTAL;
 	}
 	if (y_pos < y - 100)
 	{
@@ -106,8 +108,8 @@ void Pet::LoadBullet(SDL_Renderer* render, int PoNx, int PoNy)
 		Bullet* tmp = new Bullet;
 		if (tmp)
 		{
-			tmp->LoadImage("img//Bullet//shot_left.png", render);
-			tmp->set_Bullet_Pos(x_pos, y_pos);
+			tmp->LoadImage("img//Bullet//fireball.png", render);
+			tmp->set_Bullet_Pos(x_pos+10, y_pos+10);
 			tmp->set_move(1);
 			tmp->SetVel(rolate_angle,PoNx,PoNy);
 			list_bullet.push_back(tmp);
